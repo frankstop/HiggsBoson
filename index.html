@@ -1,0 +1,146 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>HiggsBoson | Classification Pipeline</title>
+    <meta
+      name="description"
+      content="A GitHub Pages explainer for a Higgs Boson binary classification pipeline using logistic regression, random forest, and XGBoost."
+    />
+    <link rel="stylesheet" href="assets/styles.css" />
+  </head>
+  <body>
+    <header class="site-header">
+      <nav class="nav" aria-label="Primary navigation">
+        <a class="brand" href="./">HiggsBoson</a>
+        <div class="nav-links">
+          <a href="#results">Results</a>
+          <a href="#visuals">Screenshots</a>
+          <a href="#run">Run locally</a>
+          <a href="Higgs_Boson_Classification_Pipeline.ipynb">Notebook</a>
+        </div>
+      </nav>
+      <section class="hero">
+        <div>
+          <h1>Classifying Higgs boson signal events.</h1>
+          <p>
+            This project turns the Kaggle Higgs Boson Machine Learning Challenge into a reproducible supervised learning pipeline. It compares logistic regression, random forest, and XGBoost, then explains the selected model with validation metrics and permutation importance.
+          </p>
+          <div class="actions">
+            <a class="button primary" href="#results">View results</a>
+            <a class="button" href="https://www.kaggle.com/competitions/higgs-boson/data" rel="noreferrer">Download data</a>
+          </div>
+        </div>
+        <aside class="hero-panel" aria-label="Key model metrics">
+          <div class="metric-grid">
+            <div class="metric"><span>Rows</span><strong>250k</strong></div>
+            <div class="metric"><span>Features</span><strong>30</strong></div>
+            <div class="metric"><span>Best model</span><strong>XGBoost</strong></div>
+            <div class="metric"><span>Tuned ROC-AUC</span><strong>0.9093</strong></div>
+          </div>
+        </aside>
+      </section>
+    </header>
+
+    <main>
+      <section class="section" id="overview">
+        <h2>What this is</h2>
+        <p class="section-lead">
+          The Higgs challenge asks whether a simulated particle collision event is signal, meaning consistent with Higgs boson production, or background. The pipeline handles the original Kaggle feature format, converts the <code>-999</code> sentinel values to missing values, imputes and scales numeric features, checks class imbalance, trains three classifiers, and reports hold-out plus cross-validation results.
+        </p>
+        <div class="cards">
+          <article class="card">
+            <h3>Reproducible pipeline</h3>
+            <p>All training logic lives in <code>src/higgs_pipeline.py</code>, with a notebook wrapper for review.</p>
+          </article>
+          <article class="card">
+            <h3>Physics-aware cleaning</h3>
+            <p>The Kaggle sentinel value <code>-999</code> is converted to missing data before median imputation.</p>
+          </article>
+          <article class="card">
+            <h3>Reviewable outputs</h3>
+            <p>Metrics, cross-validation tables, model tuning JSON, and result plots are saved under <code>outputs/real</code>.</p>
+          </article>
+        </div>
+      </section>
+
+      <section class="section" id="results">
+        <h2>Model results</h2>
+        <p class="section-lead">
+          XGBoost produced the strongest baseline ROC-AUC and improved after grid search tuning.
+        </p>
+        <div class="table-wrap">
+          <table>
+            <thead>
+              <tr>
+                <th>Model</th>
+                <th>Precision</th>
+                <th>Recall</th>
+                <th>F1 score</th>
+                <th>ROC-AUC</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr><td>Tuned XGBoost</td><td>0.7160</td><td>0.8260</td><td>0.7671</td><td>0.9093</td></tr>
+              <tr><td>XGBoost baseline</td><td>0.7078</td><td>0.8257</td><td>0.7622</td><td>0.9063</td></tr>
+              <tr><td>Random Forest</td><td>0.7654</td><td>0.7580</td><td>0.7617</td><td>0.9049</td></tr>
+              <tr><td>Logistic Regression</td><td>0.5884</td><td>0.7600</td><td>0.6633</td><td>0.8133</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </section>
+
+      <section class="section" id="visuals">
+        <h2>Screenshots and plots</h2>
+        <p class="section-lead">
+          These are generated directly by the pipeline and committed as static artifacts so the GitHub Pages site can show the assignment output without rerunning training.
+        </p>
+        <div class="visual-grid">
+          <article class="visual">
+            <img src="outputs/real/roc_curves.png" alt="ROC curves comparing XGBoost, Random Forest, and Logistic Regression" />
+            <div><h3>ROC curves</h3><p>XGBoost and random forest both separate signal from background well, with XGBoost leading.</p></div>
+          </article>
+          <article class="visual">
+            <img src="outputs/real/precision_recall_curves.png" alt="Precision recall curves for the classification models" />
+            <div><h3>Precision-recall curves</h3><p>Shows signal detection tradeoffs under class imbalance.</p></div>
+          </article>
+          <article class="visual">
+            <img src="outputs/real/top_features.png" alt="Bar chart of top permutation importance features" />
+            <div><h3>Top features</h3><p><code>DER_mass_MMC</code>, <code>DER_mass_transverse_met_lep</code>, and <code>DER_mass_vis</code> carried the strongest model signal.</p></div>
+          </article>
+          <article class="visual">
+            <img src="outputs/real/target_distribution.png" alt="Target class distribution showing background and signal counts" />
+            <div><h3>Target distribution</h3><p>The dataset has more background than signal events, so sampling was applied inside training folds.</p></div>
+          </article>
+        </div>
+      </section>
+
+      <section class="section" id="run">
+        <h2>Run locally</h2>
+        <p class="section-lead">
+          The real Kaggle CSV is intentionally excluded from git. Download it from Kaggle, place it at <code>data/training.csv</code>, then run the pipeline.
+        </p>
+        <pre class="code-block"><code>python3 -m venv .venv
+.venv/bin/python -m pip install -r requirements.txt
+kaggle competitions download -c higgs-boson -f training.csv.zip -p data
+unzip data/training.csv.zip -d data
+.venv/bin/python src/higgs_pipeline.py --data data/training.csv --output-dir outputs/real --cv-folds 3</code></pre>
+      </section>
+
+      <section class="section">
+        <h2>Repository map</h2>
+        <div class="file-grid">
+          <article class="file-card"><h3>Notebook</h3><p><code>Higgs_Boson_Classification_Pipeline.ipynb</code> explains the assignment workflow and loads generated plots.</p></article>
+          <article class="file-card"><h3>Pipeline</h3><p><code>src/higgs_pipeline.py</code> contains preprocessing, training, evaluation, tuning, and plot generation.</p></article>
+          <article class="file-card"><h3>Outputs</h3><p><code>outputs/real</code> contains CSV metrics, tuning JSON, summary markdown, and chart images.</p></article>
+          <article class="file-card"><h3>Pages site</h3><p><code>index.html</code> and <code>assets/styles.css</code> provide the GitHub Pages explainer.</p></article>
+        </div>
+      </section>
+    </main>
+
+    <footer class="footer">
+      <p>Built for a reproducible Higgs Boson classification assignment. Dataset source: Kaggle Higgs Boson Machine Learning Challenge.</p>
+    </footer>
+  </body>
+</html>

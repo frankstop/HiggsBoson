@@ -1,0 +1,11 @@
+{
+  "selected_model": "XGBoost",
+  "scoring": "roc_auc",
+  "best_score_cv_roc_auc": 0.9099667472452827,
+  "best_params": {
+    "model__learning_rate": 0.08,
+    "model__max_depth": 5,
+    "model__n_estimators": 350,
+    "model__subsample": 0.85
+  }
+}

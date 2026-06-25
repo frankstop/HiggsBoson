@@ -1,0 +1,12 @@
+# Local Python environment
+.venv/
+__pycache__/
+*.pyc
+.ipynb_checkpoints/
+
+# Keep Kaggle data local; download from the linked source in README.md.
+data/training.csv
+
+# Local caches
+work/
+.DS_Store
